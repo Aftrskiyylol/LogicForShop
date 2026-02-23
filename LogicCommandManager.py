@@ -1,4 +1,3 @@
-# LogicCommandManager.py
 from Heart.Commands.Client.PurchaseOfferCommand import PurchaseOfferCommand
 from Heart.Commands.Server.ChangeAvatarNameCommand import ChangeAvatarNameCommand
 from Heart.Commands.Client.SetPlayerThumbnailCommand import SetPlayerThumbnailCommand
@@ -10,7 +9,7 @@ class LogicCommandManager:
         505: SetPlayerThumbnailCommand,
         527: SetPlayerNameColorCommand,
         519: PurchaseOfferCommand,  # 🔥 PurchaseOfferCommand
-        # ... остальные команды можно оставить как строки
+        # остальные команды можно оставить как строки
     }
 
     @staticmethod
@@ -35,10 +34,9 @@ class LogicCommandManager:
         if isinstance(cmd_class, str):
             return None
 
-        # 🔥 создаём только если payload есть
+        # 🔥 Если payload пустой — создаём пустой буфер
         if commandPayload is None:
-            print(f"[WARNING] No payload for {cmd_name}, skipping")
-            return None
+            commandPayload = b''
 
         return cmd_class(commandPayload)
 
