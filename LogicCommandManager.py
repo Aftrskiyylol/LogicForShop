@@ -48,7 +48,7 @@ class LogicCommandManager:
         518: 'PurchaseTicketsCommand',
 
         # 🔥 ФИКС: PurchaseOfferCommand на 519
-        519: PurchaseOfferCommand,      # <--- ЭТО ГЛАВНОЕ ИЗМЕНЕНИЕ
+        519: PurchaseOfferCommand,
         520: 'LevelUpCommand',
 
         521: 'PurchaseHeroLvlUpMaterialCommand',
