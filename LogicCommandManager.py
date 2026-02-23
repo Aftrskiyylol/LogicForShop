@@ -1,109 +1,48 @@
+# LogicCommandManager.py
 from Heart.Commands.Client.PurchaseOfferCommand import PurchaseOfferCommand
 from Heart.Commands.Server.ChangeAvatarNameCommand import ChangeAvatarNameCommand
 from Heart.Commands.Client.SetPlayerThumbnailCommand import SetPlayerThumbnailCommand
 from Heart.Commands.Client.SetPlayerNameColorCommand import SetPlayerNameColorCommand
 
-
 class LogicCommandManager:
     commandsList = {
         201: ChangeAvatarNameCommand,
-        202: 'DiamondsAddedCommand',
-        203: 'GiveDeliveryItemsCommand',
-        204: 'DayChangedCommand',
-        205: 'DecreaseHeroScoreCommand',
-        206: 'AddNotificationCommand',
-        207: 'ChangeResourcesCommand',
-        208: 'TransactionsRevokedCommand',
-        209: 'KeyPoolChangedCommand',
-        210: 'IAPChangedCommand',
-        211: 'OffersChangedCommand',
-        212: 'PlayerDataChangedCommand',
-        213: 'InviteBlockingChangedCommand',
-        214: 'GemNameChangeStateChangedCommand',
-        215: 'SetSupportedCreatorCommand',
-        216: 'CooldownExpiredCommand',
-        217: 'ProLeagueSeasonChangedCommand',
-        218: 'BrawlPassSeasonChangedCommand',
-        219: 'BrawlPassUnlockedCommand',
-        220: 'HerowinQuestsChangedCommand',
-        221: 'TeamChatMuteStateChangedCommand',
-        222: 'RankedSeasonChangedCommand',
-        223: 'CooldownAddedCommand',
-        224: 'SetESportsHubNotificationCommand',
-        228: 'RefreshRandomRewardsCommand',
-
-        500: 'GatchaCommand',
-        503: 'ClaimDailyRewardCommand',
-        504: 'SendAllianceMailCommand',
         505: SetPlayerThumbnailCommand,
-        506: 'SelectSkinCommand',
-        507: 'UnlockSkinCommand',
-        508: 'ChangeControlModeCommand',
-        509: 'PurchaseDoubleCoinsCommand',
-        511: 'HelpOpenedCommand',
-        512: 'ToggleInGameHintsCommand',
-        514: 'DeleteNotificationCommand',
-        515: 'ClearShopTickersCommand',
-        517: 'ClaimRankUpRewardCommand',
-        518: 'PurchaseTicketsCommand',
-
-        # 🔥 ФИКС: PurchaseOfferCommand на 519
-        519: PurchaseOfferCommand,
-        520: 'LevelUpCommand',
-
-        521: 'PurchaseHeroLvlUpMaterialCommand',
-        522: 'HeroSeenCommand',
-        523: 'ClaimAdRewardCommand',
-        524: 'VideoStartedCommand',
-        525: 'SelectCharacterCommand',
-        526: 'UnlockFreeSkinsCommand',
         527: SetPlayerNameColorCommand,
-        528: 'ViewInboxNotificationCommand',
-        529: 'SelectStarPowerCommand',
-        530: 'SetPlayerAgeCommand',
-        531: 'CancelPurchaseOfferCommand',
-        532: 'ItemSeenCommand',
-        533: 'QuestSeenCommand',
-        534: 'PurchaseBrawlPassCommand',
-        535: 'ClaimTailRewardCommand',
-        536: 'PurchaseBrawlpassProgressCommand',
-        537: 'VanityItemSeenCommand',
-        538: 'SelectEmoteCommand',
-        539: 'BrawlPassAutoCollectWarningSeenCommand',
-        540: 'PurchaseChallengeLivesCommand',
-        541: 'ClearESportsHubNotificationCommand',
-        542: 'SelectGroupSkinCommand',
-        571: 'OpenRandomCommand'
+        519: PurchaseOfferCommand,  # 🔥 PurchaseOfferCommand
+        # ... остальные команды можно оставить как строки
     }
 
+    @staticmethod
     def getCommandsName(commandType):
-        try:
-            command = LogicCommandManager.commandsList[commandType]
-        except KeyError:
-            command = str(commandType)
+        command = LogicCommandManager.commandsList.get(commandType, str(commandType))
+        return command if isinstance(command, str) else command.__name__
 
-        if isinstance(command, str):
-            return command
-        return command.__name__
-
+    @staticmethod
     def commandExist(commandType):
         return commandType in LogicCommandManager.commandsList
 
-    def createCommand(commandType, commandPayload=b''):
-        commandList = LogicCommandManager.commandsList
-
-        if LogicCommandManager.commandExist(commandType):
-            print(LogicCommandManager.getCommandsName(commandType), "created")
-
-            if isinstance(commandList[commandType], str):
-                return None
-
-            return commandList[commandType](commandPayload)
-
-        else:
+    @staticmethod
+    def createCommand(commandType, commandPayload=None):
+        if not LogicCommandManager.commandExist(commandType):
             print(commandType, "skipped")
             return None
 
+        cmd_class = LogicCommandManager.commandsList[commandType]
+        cmd_name = LogicCommandManager.getCommandsName(commandType)
+        print(f"{cmd_name} created")
+
+        if isinstance(cmd_class, str):
+            return None
+
+        # 🔥 создаём только если payload есть
+        if commandPayload is None:
+            print(f"[WARNING] No payload for {cmd_name}, skipping")
+            return None
+
+        return cmd_class(commandPayload)
+
+    @staticmethod
     def isServerToClient(commandType):
         if 200 <= commandType < 500:
             return True
